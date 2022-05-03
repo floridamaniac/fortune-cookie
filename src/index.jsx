@@ -1,7 +1,10 @@
 import { React, useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { createRoot } from 'react-dom/client';
 import axios from 'axios';
+
+// How frequently to include wide fortunes in main view.
+const wideFreq = 5;
 
 function App() {
   const [fortunes, setFortunes] = useState([]);
@@ -9,65 +12,51 @@ function App() {
   const [activeFortune, setActiveFortune] = useState(null);
   const [newFormText, setNewFormText] = useState('');
 
-  const getFortunes = () => {
-    axios.get('/fortunes').then((results) => setFortunes(results.data.reverse()));
-    console.log('called');
-  };
+  const getFortunes = () => { axios.get('/fortunes').then((results) => setFortunes(results.data.reverse())); };
 
-  useEffect(() => {
-    getFortunes();
-  }, []);
+  useEffect(() => { getFortunes(); }, []);
 
+  // TODO: Add visual feedback if fortune is empty.
   const addFortune = () => {
-    axios.post('/fortunes', {
-      text: newFormText,
-      date: new Date(),
-    }).then(() => {
-      getFortunes();
-      setAddView(false);
-      setNewFormText('');
-    });
-  };
-
-  const toggleAddView = () => {
-    setAddView(true);
-  };
-
-  const deselectFortune = () => {
-    setActiveFortune(null);
-  };
-
-  const viewFortune = (i) => {
-    if (activeFortune === null) setActiveFortune(i);
-  };
-
-  const handleChange = (e) => {
-    setNewFormText(e.target.value);
-  };
-
-  const clippedText = (text) => {
-    if (text.length > 70) {
-      return (text.slice(0, 70).concat('...'));
+    if (newFormText !== '') {
+      axios.post('/fortunes', {
+        text: newFormText,
+        date: new Date(),
+      }).then(() => {
+        getFortunes();
+        setAddView(false);
+        setNewFormText('');
+      });
     }
-    return text;
+  };
+
+  const toggleAddView = () => { setAddView(!addView); };
+  const viewFortune = (i) => { if (activeFortune === null) setActiveFortune(i); };
+  const handleChange = (e) => { setNewFormText(e.target.value); };
+
+  // Clip text longer than 50 chars.
+  const clippedText = (text, double) => {
+    // If it's a wide text field, clip double the characters.
+    const clipLength = double ? 100 : 50;
+    return ((text.length > clipLength) ? (text.slice(0, clipLength).concat('...')) : text);
   };
 
   return (
-    <>
+    <MainView>
       <FortuneTitle>My Fortunes</FortuneTitle>
       <Fortunes>
         {fortunes.map((fortune, i) => (
           <FortuneWrapper key={fortune.date} onClick={() => viewFortune(i)}>
             <Fortune id={`fortune${i}`} className={activeFortune === i ? 'selected' : 'inactive'}>
               {(activeFortune === i) && (
-                <CloseFortune onClick={() => deselectFortune()}>
+                <CloseView onClick={() => setActiveFortune(null)}>
                   <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 0C6.7335 0 0 6.7335 0 15C0 23.2665 6.7335 30 15 30C23.2665 30 30 23.2665 30 15C30 6.7335 23.2665 0 15 0ZM11.5605 9.43945L15 12.8789L18.4395 9.43945C18.9606 8.9116 19.9296 8.81526 20.5605 9.43945C21.1462 10.0252 21.1462 10.9748 20.5605 11.5605L17.1211 15L20.5605 18.4395C21.1462 19.0252 21.1462 19.9748 20.5605 20.5605C19.9748 21.1462 19.0252 21.1462 18.4395 20.5605L15 17.1211L11.5605 20.5605C10.9748 21.1462 10.0252 21.1462 9.43945 20.5605C8.85382 19.9748 8.85382 19.0252 9.43945 18.4395L12.8789 15L9.43945 11.5605C8.85382 10.9748 8.85382 10.0252 9.43945 9.43945C10.0718 8.84691 10.9053 8.81517 11.5605 9.43945Z" fill="white"/>
+                    <path d="M15 0C6.7335 0 0 6.7335 0 15C0 23.2665 6.7335 30 15 30C23.2665 30 30 23.2665 30 15C30 6.7335 23.2665 0 15 0ZM11.5605 9.43945L15 12.8789L18.4395 9.43945C18.9606 8.9116 19.9296 8.81526 20.5605 9.43945C21.1462 10.0252 21.1462 10.9748 20.5605 11.5605L17.1211 15L20.5605 18.4395C21.1462 19.0252 21.1462 19.9748 20.5605 20.5605C19.9748 21.1462 19.0252 21.1462 18.4395 20.5605L15 17.1211L11.5605 20.5605C10.9748 21.1462 10.0252 21.1462 9.43945 20.5605C8.85382 19.9748 8.85382 19.0252 9.43945 18.4395L12.8789 15L9.43945 11.5605C8.85382 10.9748 8.85382 10.0252 9.43945 9.43945C10.0718 8.84691 10.9053 8.81517 11.5605 9.43945Z" fill="white" />
                   </svg>
-                </CloseFortune>
+                </CloseView>
               )}
               <FortuneText>
-                {activeFortune === i ? fortune.text : clippedText(fortune.text)}
+                {activeFortune === i ? fortune.text : clippedText(fortune.text, !(i % wideFreq))}
               </FortuneText>
               <FortuneDate>
                 {new Date(fortune.date).toDateString().split(' ').slice(1)
@@ -86,15 +75,37 @@ function App() {
 
       {addView && (
         <AddView>
+          <CloseView onClick={() => toggleAddView()}>
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 0C6.7335 0 0 6.7335 0 15C0 23.2665 6.7335 30 15 30C23.2665 30 30 23.2665 30 15C30 6.7335 23.2665 0 15 0ZM11.5605 9.43945L15 12.8789L18.4395 9.43945C18.9606 8.9116 19.9296 8.81526 20.5605 9.43945C21.1462 10.0252 21.1462 10.9748 20.5605 11.5605L17.1211 15L20.5605 18.4395C21.1462 19.0252 21.1462 19.9748 20.5605 20.5605C19.9748 21.1462 19.0252 21.1462 18.4395 20.5605L15 17.1211L11.5605 20.5605C10.9748 21.1462 10.0252 21.1462 9.43945 20.5605C8.85382 19.9748 8.85382 19.0252 9.43945 18.4395L12.8789 15L9.43945 11.5605C8.85382 10.9748 8.85382 10.0252 9.43945 9.43945C10.0718 8.84691 10.9053 8.81517 11.5605 9.43945Z" fill="black" />
+            </svg>
+          </CloseView>
           <NewFortuneInput onChange={(e) => handleChange(e)} placeholder="Start writing..." />
           <DoneButton onClick={() => addFortune()}>
             Done
           </DoneButton>
         </AddView>
       )}
-    </>
+    </MainView>
   );
 }
+
+const clickable = css`
+  &:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+  }
+  &:active {
+    transform: scale(0.97);
+    transition: transform 0.05s ease-in-out;
+  }
+  transition: transform 0.1s ease-in-out;
+  cursor: pointer;
+`;
+
+const MainView = styled.div`
+  padding: 10px;
+`;
 
 const NewFortuneInput = styled.textarea`
   outline: none;
@@ -108,13 +119,15 @@ const NewFortuneInput = styled.textarea`
   width: 100%;
   height: 80%;
   padding: 20px;
+  margin-top: 50px;
 `;
 
-const CloseFortune = styled.div`
+const CloseView = styled.div`
   position: absolute;
   top: 30px;
   right: 30px;
   z-index: 900;
+  ${clickable};
 `;
 
 const FortuneTitle = styled.h1`
@@ -123,8 +136,8 @@ const FortuneTitle = styled.h1`
   font-weight: 700;
   font-size: 32px;
   letter-spacing: -0.5px;
-  margin-top: 20px;
-  margin-left: 10px;
+  margin-top: 60px;
+  margin-bottom: 10px;
 `;
 
 const FortuneText = styled.p`
@@ -178,6 +191,7 @@ const Fortune = styled.div`
     }
   }
   &.inactive {
+    cursor: pointer;
     &:active {
       transform: scale(0.97);
       transition: transform 0.05s ease-in-out;
@@ -188,7 +202,8 @@ const Fortune = styled.div`
 `;
 
 const FortuneWrapper = styled.article`
-  width: 196px;
+  min-width: 196px;
+  flex: 1;
   height: 162px;
   margin: 2px;
   position: relative;
@@ -213,7 +228,7 @@ const DoneButton = styled.span`
   position: absolute;
   bottom: 16px;
   right: 16px;
-  cursor: pointer;
+  ${clickable};
 `;
 
 const AddView = styled.div`
@@ -242,15 +257,7 @@ const AddFortuneIcon = styled.span`
     left: 50%;
     transform: translate(-50%, -50%);
   }
-  &:hover {
-    transform: scale(1.03);
-    transition: transform 0.2s ease-in-out;
-  }
-  &:active {
-    transform: scale(0.97);
-    transition: transform 0.05s ease-in-out;
-  }
-  transition: transform 0.1s ease-in-out;
+  ${clickable};
   z-index: 700;
 `;
 
@@ -258,8 +265,9 @@ const Fortunes = styled.section`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  & > :nth-child(5n + 1) {
-    width: 400px;
+  & > :nth-child(${wideFreq}n + 1) {
+    min-width: 300px;
+    flex: 2;
   }
   & > :nth-child(6n + 1) > * { background-color: #0AB5FF; }
   & > :nth-child(6n + 2) > * { background-color: #9146FF;; }
