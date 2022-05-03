@@ -29,3 +29,13 @@ This app uses `json-server` as a lightweight server to handle basic CRUD routing
 1. `npm i` to install dependencies.
 2. Add a `fortune-data.json` file to the root directory. This is what `json-server` will use as our database.
 3. `npm run start` boots up the server on port 3000, and you're good to go :)
+
+## TODO
+
+This app was built in a few hours, so there's still more to do, including:
+
+1. Adding visual feedback when trying to submit an empty fortune.
+2. Animations for view changes.
+3. Improving visual date handling.
+4. Smarter clipping of fortune text length in main view.
+5. Move out SVGs into separate files.
