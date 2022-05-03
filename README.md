@@ -30,8 +30,9 @@ This app uses `json-server` as a lightweight server to handle basic CRUD routing
 ### Installation
 
 1. `npm i` to install dependencies.
-2. Add a `fortune-data.json` file to the root directory. This is what `json-server` will use as our database.
-3. `npm run start` boots up the server on port 3000, and you're good to go :)
+2. Bundle your files! `npm run client-prod`.
+3. Add a `fortune-data.json` file to the root directory. This is what `json-server` will use as our database.
+4. `npm run start` boots up the server on port 3000, and you're good to go :)
 
 ## TODO
 
