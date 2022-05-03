@@ -2,6 +2,9 @@
 
 An app to catalog the words of wisdom learned from our favorite fortune cookie fortunes.
 
+https://user-images.githubusercontent.com/67052402/166407809-4841fa66-2d17-493f-8394-1bdab04c2487.mov
+
+
 ## Getting Started
 
 ### Dependencies
@@ -35,7 +38,7 @@ This app uses `json-server` as a lightweight server to handle basic CRUD routing
 This app was built in a few hours, so there's still more to do, including:
 
 1. Adding visual feedback when trying to submit an empty fortune.
-2. Animations for view changes.
-3. Improving visual date handling.
-4. Smarter clipping of fortune text length in main view.
-5. Move out SVGs into separate files.
+3. Animations for view changes.
+4. Improving visual date handling.
+5. Smarter clipping of fortune text length in main view.
+6. Move out SVGs into separate files.
