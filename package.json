@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "client-dev": "npx webpack --watch",
-    "start": "json-server fortune-data.json"
+    "start": "json-server --id date fortune-data.json"
   },
   "author": "Walter Latimer",
   "license": "ISC",

@@ -7,13 +7,26 @@ function App() {
   const [fortunes, setFortunes] = useState([]);
   const [addView, setAddView] = useState(false);
   const [activeFortune, setActiveFortune] = useState(null);
+  const [newFormText, setNewFormText] = useState('');
+
+  const getFortunes = () => {
+    axios.get('/fortunes').then((results) => setFortunes(results.data.reverse()));
+    console.log('called');
+  };
 
   useEffect(() => {
-    axios.get('/fortunes').then((results) => setFortunes(results.data));
+    getFortunes();
   }, []);
 
-  const addFortune = (e) => {
-    setAddView(false);
+  const addFortune = () => {
+    axios.post('/fortunes', {
+      text: newFormText,
+      date: new Date(),
+    }).then(() => {
+      getFortunes();
+      setAddView(false);
+      setNewFormText('');
+    });
   };
 
   const toggleAddView = () => {
@@ -26,6 +39,10 @@ function App() {
 
   const viewFortune = (i) => {
     if (activeFortune === null) setActiveFortune(i);
+  };
+
+  const handleChange = (e) => {
+    setNewFormText(e.target.value);
   };
 
   return (
@@ -62,6 +79,7 @@ function App() {
 
       {addView && (
         <AddView>
+          <NewFortuneInput onChange={(e) => handleChange(e)} placeholder="Start writing..." />
           <DoneButton onClick={() => addFortune()}>
             Done
           </DoneButton>
@@ -70,6 +88,20 @@ function App() {
     </>
   );
 }
+
+const NewFortuneInput = styled.textarea`
+  outline: none;
+  border: 0;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 30px;
+  letter-spacing: -0.5px;
+  width: 100%;
+  height: 80%;
+  padding: 20px;
+`;
 
 const CloseFortune = styled.div`
   position: absolute;
@@ -172,6 +204,10 @@ const DoneButton = styled.span`
   justify-content: center;
   align-items: center;
   border-radius: 12px;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  cursor: pointer;
 `;
 
 const AddView = styled.div`
