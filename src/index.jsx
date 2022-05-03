@@ -45,6 +45,13 @@ function App() {
     setNewFormText(e.target.value);
   };
 
+  const clippedText = (text) => {
+    if (text.length > 70) {
+      return (text.slice(0, 70).concat('...'));
+    }
+    return text;
+  };
+
   return (
     <>
       <FortuneTitle>My Fortunes</FortuneTitle>
@@ -60,7 +67,7 @@ function App() {
                 </CloseFortune>
               )}
               <FortuneText>
-                {fortune.text}
+                {activeFortune === i ? fortune.text : clippedText(fortune.text)}
               </FortuneText>
               <FortuneDate>
                 {new Date(fortune.date).toDateString().split(' ').slice(1)
@@ -115,13 +122,12 @@ const FortuneTitle = styled.h1`
   font-style: normal;
   font-weight: 700;
   font-size: 32px;
-  line-height: 35px;
-  /* identical to box height, or 109% */
   letter-spacing: -0.5px;
+  margin-top: 20px;
+  margin-left: 10px;
 `;
 
 const FortuneText = styled.p`
-  /* position: absolute; */
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 700;
@@ -249,9 +255,9 @@ const AddFortuneIcon = styled.span`
 `;
 
 const Fortunes = styled.section`
-  /* width: 400px; */
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   & > :nth-child(5n + 1) {
     width: 400px;
   }
