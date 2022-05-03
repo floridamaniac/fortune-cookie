@@ -75,7 +75,7 @@ function App() {
 }
 
 const MainView = styled.div`
-  padding: 10px;
+  margin: 10px;
   font-family: 'Roboto';
   font-style: normal;
 `;

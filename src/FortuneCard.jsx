@@ -100,7 +100,7 @@ const Fortune = styled.div`
 `;
 
 const FortuneWrapper = styled.article`
-  min-width: 196px;
+  min-width: 150px;
   flex: 1;
   height: 162px;
   margin: 2px;
