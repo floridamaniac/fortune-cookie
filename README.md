@@ -2,8 +2,7 @@
 
 An app to catalog the words of wisdom learned from our favorite fortune cookie fortunes.
 
-https://user-images.githubusercontent.com/67052402/166407809-4841fa66-2d17-493f-8394-1bdab04c2487.mov
-
+https://user-images.githubusercontent.com/67052402/166413911-c91f345d-c490-4997-a2f1-7663d3fa3c14.mov
 
 ## Getting Started
 
